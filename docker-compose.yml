@@ -1,19 +1,32 @@
 version: "3.0"
 
 services:
-
   nginx:
-    image: sierratecnologia/nginx:1.13
-    ports:
-     - 80:80
+    image: nginx
     volumes:
      - ./:/var/www
      - ./docker/nginx/:/etc/nginx/conf.d/
     depends_on:
-     - php
+      - php
+    ports:
+      - "80:80"
+      - "443:443"
     networks:
      - front-tier
      - back-tier
+
+
+  # Our Redis service:
+  redis:
+    image: redis:3.2.4-alpine
+    ports:
+      # We'll bind our host's port 6379 to redis's port 6379, so we can use
+      # Redis Desktop Manager (or other tools) with it:
+      - 6379:6379
+    volumes:
+      # We'll mount the 'redis-data' volume into the location redis stores it's data:
+      - redis-data:/var/lib/redis
+    command: redis-server --appendonly yes
 
   php:
     image: sierratecnologia/php:7.1
@@ -24,7 +37,6 @@ services:
     environment:
      - XDEBUG_CONFIG=remote_host=172.17.0.1
     volumes:
-#     - ./docker/php/php.ini:/usr/local/etc/php/conf.d/php.ini
      - ./:/var/www
     depends_on:
      - postgres
@@ -32,63 +44,33 @@ services:
       - front-tier
       - back-tier
 
-  postgres:
-    image: sierratecnologia/postgresql:10.0
-    restart: always
-    environment:
-     - POSTGRES_USER=simaster
-     - POSTGRES_PASSWORD=A123456
-    ports:
-     - "5432:5432"
+  mysql:
+    image: mysql:5.7
     volumes:
-     - ../volumes/postgres10:/var/lib/postgresql/data
+     - db_data:/var/lib/mysql
+     - ./dabatase/dumps:/dumps
+    environment:
+     MYSQL_ROOT_PASSWORD: A123456
+     MYSQL_DATABASE: nlsgroup_ee
+     MYSQL_USER: nlsgroup
+     MYSQL_PASSWORD: A123456
     networks:
      - back-tier
 
-  pgadmin:
-    image: sierratecnologia/pgadmin4:4
+  phpmyadmin:
+    image: sierratecnologia/phpmyadmin:4.7
+    depends_on:
+      - mysql
+    environment:
+      - PMA_HOST=mysql
+      - PMA_PORT=3306
+      - PMA_ARBITRARY=1
     restart: always
     ports:
-     - "5050:5050"
-    depends_on:
-     - postgres
-    volumes:
-     - ../volumes/pgadmin:/pgadmin
-    links:
-     - postgres:postgres
+     - "8080:80"
     networks:
      - front-tier
      - back-tier
-
-#  mysql:
-#    image: sierratecnologia/mysql-server:8.0
-#    environment:
-#      - MYSQL_ROOT_PASSWORD=A123456
-#      - MYSQL_PASSWORD=A123456
-#      - MYSQL_DATABASE=nlsgroup
-#      - MYSQL_USER=simaster
-#    ports:
-#     - "3306:3306"
-#    volumes:
-#      - ../docker/volumes/mysql:/var/lib/mysql
-#      - ./doc:/tmp/docs
-#    networks:
-#     - back-tier
-#
-#  phpmyadmin:
-#    image: sierratecnologia/phpmyadmin:4.7
-#    depends_on:
-#      - mysql
-#    environment:
-#      - PMA_HOST=mysql
-#      - PMA_PORT=3306
-#      - PMA_ARBITRARY=1
-#    restart: always
-#    ports:
-#     - "8080:80"
-#    networks:
-#     - front-tier
-#     - back-tier
 
 volumes:
  db-data:

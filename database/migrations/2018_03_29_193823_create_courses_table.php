@@ -18,6 +18,8 @@ class CreateCoursesTable extends Migration
             $table->string('name');
             $table->integer('capacity');
             $table->string('location');
+            $table->unsignedInteger('category_id');
+            $table->foreign('category_id')->references('id')->on('categorys');
             $table->timestamps();
         });
     }
