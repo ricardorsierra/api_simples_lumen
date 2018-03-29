@@ -21,5 +21,3 @@ $router->get('categoria',  ['uses' => 'CategoryController@index']);
 $router->post('cursos', ['uses' => 'CourseController@create']);
 $router->get('cursos',  ['uses' => 'CourseController@index']);
 $router->get('cursos/{id}', ['uses' => 'CourseController@show']);
-// $router->delete('cursos/{id}', ['uses' => 'CourseController@delete']);
-// $router->put('cursos/{id}', ['uses' => 'CourseController@update']);

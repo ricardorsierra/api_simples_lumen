@@ -11,9 +11,16 @@
 |
 */
 
-$factory->define(App\User::class, function (Faker\Generator $faker) {
+$factory->define(App\Model\Category::class, function (Faker\Generator $faker) {
+    return [
+        'name' => $faker->name
+    ];
+});
+
+$factory->define(App\Model\Course::class, function (Faker\Generator $faker) {
     return [
         'name' => $faker->name,
-        'email' => $faker->email,
+        'location' => $faker->name,
+        'capacity' => 12
     ];
 });

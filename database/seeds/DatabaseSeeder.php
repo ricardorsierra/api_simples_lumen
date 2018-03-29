@@ -14,8 +14,7 @@ class DatabaseSeeder extends Seeder
         DB::table('categorys')->insert([
             'name' => str_random(10)
         ]);
-
-
+        
         DB::table('courses')->insert([
             'name' => str_random(10),
             'capacity' => 5,

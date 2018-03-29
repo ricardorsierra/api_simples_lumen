@@ -15,6 +15,9 @@ class CategoryController extends Controller
 
     public function create(Request $request)
     {
+        $this->validate($request, [
+            'name' => 'required',
+        ]);
         $course = Category::create($request->all());
 
         return response()->json($course, 201);

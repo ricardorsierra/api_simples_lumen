@@ -22,25 +22,11 @@ class CourseController extends Controller
     {
         $this->validate($request, [
             'name' => 'required',
-            'email' => 'required|email|unique:users',
+            'capacity' => 'required',
             'location' => 'required|alpha'
         ]);
         $course = Course::create($request->all());
 
         return response()->json($course, 201);
-    }
-
-    public function update($id, Request $request)
-    {
-        $course = Course::findOrFail($id);
-        $course->update($request->all());
-
-        return response()->json($course, 200);
-    }
-
-    public function delete($id)
-    {
-        Course::findOrFail($id)->delete();
-        return response('Deleted Successfully', 200);
     }
 }

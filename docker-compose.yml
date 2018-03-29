@@ -39,7 +39,7 @@ services:
     volumes:
      - ./:/var/www
     depends_on:
-     - postgres
+     - mysql
     networks:
       - front-tier
       - back-tier

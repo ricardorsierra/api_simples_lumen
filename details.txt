@@ -1,0 +1,16 @@
+Foi usado o microframework Lumem. O projeto requer PHP 7.0 ou superior e um banco de dados mysql ou postgres.
+
+Para instalar copie o arquivo .env.example para .env e modifique as configuracoes do banco de dados.
+
+Crie um banco de dados na sua maquina e rode as migrates e o seed.
+./artisan migrate --seed
+
+Levante o servidor:
+php -S localhost:8000 -t public
+
+User o postman para validar o acesso a api nas rotas:
+post /categoria
+get /categoria
+post /cursos
+get /cursos
+get /cursos/{id}
