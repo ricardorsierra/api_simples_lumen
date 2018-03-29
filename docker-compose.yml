@@ -1,0 +1,98 @@
+version: "3.0"
+
+services:
+
+  nginx:
+    image: sierratecnologia/nginx:1.13
+    ports:
+     - 80:80
+    volumes:
+     - ./:/var/www
+     - ./docker/nginx/:/etc/nginx/conf.d/
+    depends_on:
+     - php
+    networks:
+     - front-tier
+     - back-tier
+
+  php:
+    image: sierratecnologia/php:7.1
+    ports:
+     - "9000:9000"
+    restart: always
+    command: bash -c "sed -i \"s/memory_limit = 128M/memory_limit = 1024M/\" /usr/local/etc/php/php.ini && sed -i \"s/short_open_tag = Off/short_open_tag = On/\" /usr/local/etc/php/php.ini && sed -i \"s/max_execution_time = 30/max_execution_time = 300/\" /usr/local/etc/php/php.ini && php-fpm"
+    environment:
+     - XDEBUG_CONFIG=remote_host=172.17.0.1
+    volumes:
+#     - ./docker/php/php.ini:/usr/local/etc/php/conf.d/php.ini
+     - ./:/var/www
+    depends_on:
+     - postgres
+    networks:
+      - front-tier
+      - back-tier
+
+  postgres:
+    image: sierratecnologia/postgresql:10.0
+    restart: always
+    environment:
+     - POSTGRES_USER=simaster
+     - POSTGRES_PASSWORD=A123456
+    ports:
+     - "5432:5432"
+    volumes:
+     - ../volumes/postgres10:/var/lib/postgresql/data
+    networks:
+     - back-tier
+
+  pgadmin:
+    image: sierratecnologia/pgadmin4:4
+    restart: always
+    ports:
+     - "5050:5050"
+    depends_on:
+     - postgres
+    volumes:
+     - ../volumes/pgadmin:/pgadmin
+    links:
+     - postgres:postgres
+    networks:
+     - front-tier
+     - back-tier
+
+#  mysql:
+#    image: sierratecnologia/mysql-server:8.0
+#    environment:
+#      - MYSQL_ROOT_PASSWORD=A123456
+#      - MYSQL_PASSWORD=A123456
+#      - MYSQL_DATABASE=nlsgroup
+#      - MYSQL_USER=simaster
+#    ports:
+#     - "3306:3306"
+#    volumes:
+#      - ../docker/volumes/mysql:/var/lib/mysql
+#      - ./doc:/tmp/docs
+#    networks:
+#     - back-tier
+#
+#  phpmyadmin:
+#    image: sierratecnologia/phpmyadmin:4.7
+#    depends_on:
+#      - mysql
+#    environment:
+#      - PMA_HOST=mysql
+#      - PMA_PORT=3306
+#      - PMA_ARBITRARY=1
+#    restart: always
+#    ports:
+#     - "8080:80"
+#    networks:
+#     - front-tier
+#     - back-tier
+
+volumes:
+ db-data:
+
+networks:
+ front-tier:
+ back-tier:
